@@ -1,6 +1,15 @@
 #!/bin/bash
+set -e
 
-docker pull zaproxy/zap-stable
-docker run -i zaproxy/zap-stable zap-baseline.py -t "https://kenken64.github.io/bitcoin-order-app/" -l PASS > zap_baseline_report.html
+mkdir -p zap-output
+chmod 777 zap-output
 
-echo $? > /dev/null
+docker pull ghcr.io/zaproxy/zaproxy:stable
+
+docker run --rm \
+  -v "${PWD}/zap-output:/zap/wrk/:rw" \
+  ghcr.io/zaproxy/zaproxy:stable \
+  zap-baseline.py \
+  -t "https://liaohaochen2-oss.github.io/bitcoin-order-app/" \
+  -r zap_baseline_report.html \
+  -I

@@ -1,0 +1,33 @@
+name: "owasp-scan"
+
+on:
+  push:
+    branches: [githubcicd]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Change script permission
+        run: |
+          chmod +x scripts/zap-script.sh
+
+      - name: ZAP scan
+        run: scripts/zap-script.sh
+
+      - name: Archive production artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap report
+          path: ./zap-output/zap_baseline_report.html
+          if-no-files-found: error
+
+
